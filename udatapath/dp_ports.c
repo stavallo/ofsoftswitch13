@@ -685,12 +685,16 @@ dp_ports_handle_port_mod(struct datapath *dp, struct ofl_msg_port_mod *msg,
         return ofl_error(OFPET_PORT_MOD_FAILED,OFPPMFC_BAD_PORT);
     }
 
+#ifndef NS3_OFSWITCH13
+    // In ns3, mac addr never changes. So, let's skip netdev_get_etheraddr 
+    // check to avoid reimplementing this entire port_mod handler.
+
     /* Make sure the port id hasn't changed since this was sent */
     if (memcmp(msg->hw_addr, netdev_get_etheraddr(p->netdev),
                      ETH_ADDR_LEN) != 0) {
         return ofl_error(OFPET_PORT_MOD_FAILED, OFPPMFC_BAD_HW_ADDR);
     }
-
+#endif
 
     if (msg->mask) {
         p->conf->config &= ~msg->mask;
