@@ -61,6 +61,8 @@
     #pragma weak dp_ports_output
 #endif
 
+uint32_t port_speed(uint32_t conf);
+
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
 
 #if defined(OF_HW_PLAT)
@@ -300,7 +302,7 @@ dp_ports_run(struct datapath *dp) {
 }
 
 /* Returns the speed value in kbps of the highest bit set in the bitfield. */
-static uint32_t port_speed(uint32_t conf) {
+uint32_t port_speed(uint32_t conf) {
     if ((conf & OFPPF_1TB_FD) != 0)   return 1024 * 1024 * 1024;
     if ((conf & OFPPF_100GB_FD) != 0) return  100 * 1024 * 1024;
     if ((conf & OFPPF_40GB_FD) != 0)  return   40 * 1024 * 1024;

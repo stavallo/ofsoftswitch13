@@ -77,7 +77,7 @@
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
 
 
-static struct remote *remote_create(struct datapath *dp, struct rconn *rconn, struct rconn *rconn_aux);
+struct remote *remote_create(struct datapath *dp, struct rconn *rconn, struct rconn *rconn_aux);
 static void remote_run(struct datapath *, struct remote *);
 static void remote_rconn_run(struct datapath *, struct remote *, uint8_t);
 static void remote_wait(struct remote *);
@@ -350,7 +350,7 @@ remote_destroy(struct remote *r)
     }
 }
 
-static struct remote *
+struct remote *
 remote_create(struct datapath *dp, struct rconn *rconn, struct rconn *rconn_aux)
 {
     size_t i;
