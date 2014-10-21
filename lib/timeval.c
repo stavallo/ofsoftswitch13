@@ -42,6 +42,13 @@
 #include "fatal-signal.h"
 #include "util.h"
 
+#if defined (__GNUC__) && defined (NS3_OFSWITCH13)
+    // Define time_now and time_msec functions as weak, 
+    // so ns3 can override them and get proper simulation time.
+    #pragma weak time_now
+    #pragma weak time_msec
+#endif
+
 /* Initialized? */
 static bool inited;
 

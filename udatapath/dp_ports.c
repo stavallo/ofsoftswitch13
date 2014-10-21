@@ -55,6 +55,12 @@
 #include "vlog.h"
 #define LOG_MODULE VLM_dp_ports
 
+#if defined (__GNUC__) && defined (NS3_OFSWITCH13)
+    // Define dp_ports_output function as weak, 
+    // so ns3 can override it and send the buffer over switch port.
+    #pragma weak dp_ports_output
+#endif
+
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
 
 #if defined(OF_HW_PLAT)

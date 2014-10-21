@@ -66,6 +66,12 @@
 #include "stp.h"
 #include "vconn.h"
 
+#if defined (__GNUC__) && defined (NS3_OFSWITCH13)
+    // Define send_openflow_buffer_to_remote functions as weak, 
+    // so ns3 can override it and send the buffer over simulated channel. 
+    #pragma weak send_openflow_buffer_to_remote
+#endif
+
 #define LOG_MODULE VLM_dp
 
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
@@ -429,7 +435,7 @@ dp_set_max_queues(struct datapath *dp, uint32_t max_queues) {
 }
 
 
-static int
+int
 send_openflow_buffer_to_remote(struct ofpbuf *buffer, struct remote *remote) {
     struct rconn* rconn = remote->rconn;
     int retval;

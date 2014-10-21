@@ -258,5 +258,10 @@ static struct names16 band_names[] = {
 
 #define NUM_ELEMS( x )   (sizeof(x) / sizeof(x[0]))
 
+/* These signature is necessary here only when compiling the ns3 library. */
+void dpctl_send_and_print(struct vconn *vconn, struct ofl_msg_header *msg);
+void dpctl_transact_and_print(struct vconn *vconn, struct ofl_msg_header *req,
+                              struct ofl_msg_header **repl);
+#endif
 
 #endif /* DPCTL_H */

@@ -201,6 +201,12 @@ dp_send_message(struct datapath *dp, struct ofl_msg_header *msg,
                      const struct sender *sender);
 
 
+#if defined (__GNUC__) && defined (NS3_OFSWITCH13)
+/* Send an openflow buffer over a remote connection. 
+ * This signature is necessary here only when compiling the ns3 library. */
+int
+send_openflow_buffer_to_remote(struct ofpbuf *buffer, struct remote *remote);
+#endif
 
 /* Handles a set description (openflow experimenter) message */
 ofl_err

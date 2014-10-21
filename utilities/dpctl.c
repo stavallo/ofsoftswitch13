@@ -93,6 +93,20 @@ struct command {
 
 static struct command all_commands[];
 
+#if defined (__GNUC__) && defined (NS3_OFSWITCH13)
+    // Define dpctl_send_and_print and dpctl_transact_and_print functions as weak, 
+    // so ns3 can override it and send the dpctl message over simulated channel. 
+    #pragma weak dpctl_send_and_print
+    #pragma weak dpctl_transact_and_print
+#endif
+
+void 
+dpctl_send_and_print(struct vconn *vconn, struct ofl_msg_header *msg);
+
+void 
+dpctl_transact_and_print(struct vconn *vconn, struct ofl_msg_header *req,
+                              struct ofl_msg_header **repl);
+
 static void
 usage(void) NO_RETURN;
 
@@ -238,7 +252,7 @@ dpctl_transact(struct vconn *vconn, struct ofl_msg_header *req,
     ofpbuf_delete(ofpbufrepl);
 }
 
-static void
+void
 dpctl_transact_and_print(struct vconn *vconn, struct ofl_msg_header *req,
                                         struct ofl_msg_header **repl) {
     struct ofl_msg_header *reply;
@@ -307,7 +321,7 @@ dpctl_send(struct vconn *vconn, struct ofl_msg_header *msg) {
     dpctl_barrier(vconn);
 }
 
-static void
+void
 dpctl_send_and_print(struct vconn *vconn, struct ofl_msg_header *msg) {
     char *str;
     str = ofl_msg_to_string(msg, &dpctl_exp);
