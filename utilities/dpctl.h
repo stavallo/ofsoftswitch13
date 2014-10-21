@@ -34,128 +34,23 @@
 
 #include "openflow/openflow.h"
 
+#include "vconn.h"
+#include "oflib/ofl-messages.h"
+
 struct names8 {
-    uint8_t   code;
-    char     *name;
+    uint8_t    code;
+    const char *name;
 };
 
 struct names16 {
     uint16_t   code;
-    char      *name;
+    const char *name;
 };
 
 struct names32 {
     uint32_t   code;
-    char      *name;
+    const char *name;
 };
-
-
-
-static struct names32 port_names[] = {
-        {OFPP_IN_PORT,    "in_port"},
-        {OFPP_TABLE,      "table"},
-        {OFPP_NORMAL,     "normal"},
-        {OFPP_FLOOD,      "flood"},
-        {OFPP_ALL,        "all"},
-        {OFPP_CONTROLLER, "ctrl"},
-        {OFPP_LOCAL,      "local"},
-        {OFPP_ANY,        "any"}
-};
-
-static struct names32 queue_names[] = {
-        {OFPQ_ALL, "all"}
-};
-
-static struct names32 group_names[] = {
-        {OFPG_ALL, "all"},
-        {OFPG_ANY, "any"}
-};
-
-static struct names16 ext_header_names[] = {
-        {OFPIEH_NONEXT, "no_next"},
-        {OFPIEH_ESP,    "esp"},
-        {OFPIEH_AUTH,   "auth"},
-        {OFPIEH_DEST,   "dest"},
-        {OFPIEH_FRAG,   "frag"},
-        {OFPIEH_ROUTER, "router"},
-        {OFPIEH_HOP,    "hop"},
-        {OFPIEH_UNREP,  "unrep"},
-        {OFPIEH_UNSEQ,  "unseq"}
-};
-
-static struct names8 group_type_names[] = {
-        {OFPGT_ALL,      "all"},
-        {OFPGT_SELECT,   "sel"},
-        {OFPGT_INDIRECT, "ind"},
-        {OFPGT_FF,       "ff"}
-};
-
-static struct names16 group_mod_cmd_names[] = {
-        {OFPGC_ADD,    "add"},
-        {OFPGC_MODIFY, "mod"},
-        {OFPGC_DELETE, "del"}
-};
-
-static struct names16 meter_mod_cmd_names[] = {
-        {OFPMC_ADD,    "add"},
-        {OFPMC_MODIFY, "mod"},
-        {OFPMC_DELETE, "del"}
-};
-
-static struct names8 table_names[] = {
-        {0xff, "all"}
-};
-
-static struct names16 inst_names[] = {
-        {OFPIT_GOTO_TABLE,     "goto"},
-        {OFPIT_WRITE_METADATA, "meta"},
-        {OFPIT_WRITE_ACTIONS,  "write"},
-        {OFPIT_APPLY_ACTIONS,  "apply"},
-        {OFPIT_CLEAR_ACTIONS,  "clear"},
-        {OFPIT_METER,  "meter"}
-};
-
-static struct names8 flow_mod_cmd_names[] = {
-        {OFPFC_ADD,           "add"},
-        {OFPFC_MODIFY,        "mod"},
-        {OFPFC_MODIFY_STRICT, "mods"},
-        {OFPFC_DELETE,        "del"},
-        {OFPFC_DELETE_STRICT, "dels"}
-};
-
-static struct names32 buffer_names[] = {
-        {0xffffffff, "none"}
-};
-
-static struct names16 vlan_vid_names[] = {
-        {OFPVID_PRESENT,  "any"},
-        {OFPVID_NONE, "none"}
-};
-
-
-static struct names16 action_names[] = {
-        {OFPAT_OUTPUT,         "output"},
-        {OFPAT_COPY_TTL_OUT,   "ttl_out"},
-        {OFPAT_COPY_TTL_IN,    "ttl_in"},
-        {OFPAT_SET_MPLS_TTL,   "mpls_ttl"},
-        {OFPAT_DEC_MPLS_TTL,   "mpls_dec"},
-        {OFPAT_PUSH_VLAN,      "push_vlan"},
-        {OFPAT_POP_VLAN,       "pop_vlan"},
-        {OFPAT_PUSH_PBB,       "push_pbb"},
-        {OFPAT_POP_PBB,        "pop_pbb"},
-        {OFPAT_PUSH_MPLS,      "push_mpls"},
-        {OFPAT_POP_MPLS,       "pop_mpls"},
-        {OFPAT_SET_QUEUE,      "queue"},
-        {OFPAT_GROUP,          "group"},
-        {OFPAT_SET_NW_TTL,     "nw_ttl"},
-        {OFPAT_DEC_NW_TTL,     "nw_dec"},
-        {OFPAT_SET_FIELD,      "set_field"}
-};
-
-static struct names16 band_names[] = {
-    {OFPMBT_DROP, "drop"},
-    {OFPMBT_DSCP_REMARK, "dscp_remark"}
-}; 
 
 #define FLOW_MOD_COMMAND       "cmd"
 #define FLOW_MOD_COOKIE        "cookie"
@@ -257,6 +152,10 @@ static struct names16 band_names[] = {
 
 
 #define NUM_ELEMS( x )   (sizeof(x) / sizeof(x[0]))
+
+#ifdef NS3_OFSWITCH13
+/* Enable ns3 openflow controller to execute dpctl commands. */
+int dpctl_exec_ns3_command (void *ctrl, int argc, char *argv[]);
 
 /* These signature is necessary here only when compiling the ns3 library. */
 void dpctl_send_and_print(struct vconn *vconn, struct ofl_msg_header *msg);
