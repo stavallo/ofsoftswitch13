@@ -9,6 +9,7 @@ config.h.in~
 config.log
 config.status
 configure
+.deps/
 lib/.deps/
 lib/.dirstamp
 lib/backtrace.o
@@ -117,6 +118,8 @@ udatapath/udatapath_ofdatapath-pipeline.o
 udatapath/udatapath_ofdatapath-udatapath.o
 udatapath/udatapath_ofdatapath-meter_entry.o
 udatapath/udatapath_ofdatapath-meter_table.o
+udatapath/libns3openflow13.a
+udatapath_libns3openflow13_a-*.o
 utilities/.deps/
 utilities/.dirstamp
 utilities/dpctl.o
@@ -127,3 +130,5 @@ utilities/vlogconf.o
 
 *~
 .*.swp
+utilities/ofp-read
+utilities/ofp-read.o

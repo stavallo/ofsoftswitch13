@@ -52,6 +52,7 @@ if test "$PERL" = no; then
    AC_MSG_ERROR([Perl interpreter not found in $PATH or $PERL.])
 fi
 
+UDP_CHECK_LIBUDATAPATHNS3
 OFP_CHECK_LIBOPENFLOW
 OFP_CHECK_IF_PACKET
 OFP_CHECK_HWTABLES

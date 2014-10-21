@@ -26,6 +26,10 @@ else
 AM_LDFLAGS = -export-dynamic
 endif
 
+if BUILD_NS3_LIBS
+AM_CPPFLAGS += -fPIC
+endif
+
 CLEANFILES =
 DISTCLEANFILES =
 EXTRA_DIST =
