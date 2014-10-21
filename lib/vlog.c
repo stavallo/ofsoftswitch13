@@ -632,6 +632,9 @@ vlog_rate_limit(enum vlog_module module, enum vlog_level level,
         return;
     }
 
+#ifndef NS3_OFSWITCH13
+    // When compiling ns3 library, skip the rate limit check,
+    // so simulator can dump all logs.
     if (rl->tokens < VLOG_MSG_TOKENS) {
         time_t now = time_now();
         if (rl->last_fill > now) {
@@ -653,6 +656,7 @@ vlog_rate_limit(enum vlog_module module, enum vlog_level level,
         }
     }
     rl->tokens -= VLOG_MSG_TOKENS;
+#endif
 
     va_start(args, message);
     vlog_valist(module, level, message, args);
