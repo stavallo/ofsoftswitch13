@@ -30,8 +30,8 @@
  * Author: Zoltán Lajos Kis <zoltan.lajos.kis@ericsson.com>
  */
 
-#ifndef PACKET_H
-#define PACKET_H 1
+#ifndef UDP_PACKET_H
+#define UDP_PACKET_H 1
 
 #include <stdbool.h>
 #include "action_set.h"
@@ -82,4 +82,4 @@ packet_destroy(struct packet *pkt);
 struct packet *
 packet_clone(struct packet *pkt);
 
-#endif /* PACKET_H */
+#endif /* UDP_PACKET_H */
