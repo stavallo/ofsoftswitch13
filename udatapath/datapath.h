@@ -130,6 +130,9 @@ struct remote {
     struct list node;
     struct rconn *rconn;
     struct rconn *rconn_aux;
+#ifdef NS3_OFSWITCH13
+    struct datapath *dp;
+#endif
     
 #define TXQ_LIMIT 128           /* Max number of packets to queue for tx. */
     int n_txq;                  /* Number of packets queued for tx on rconn. */

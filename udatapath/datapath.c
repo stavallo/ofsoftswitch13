@@ -356,6 +356,9 @@ remote_create(struct datapath *dp, struct rconn *rconn, struct rconn *rconn_aux)
     size_t i;
     struct remote *remote = xmalloc(sizeof *remote);
     list_push_back(&dp->remotes, &remote->node);
+#ifdef NS3_OFSWITCH13
+    remote->dp = dp;
+#endif
     remote->rconn = rconn;
     remote->rconn_aux = rconn_aux;
     remote->cb_dump = NULL;
