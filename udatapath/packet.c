@@ -62,8 +62,11 @@ packet_create(struct datapath *dp, uint32_t in_port,
     pkt->out_queue        = 0;
     pkt->buffer_id        = NO_BUFFER;
     pkt->table_id         = 0;
+
 #ifdef NS3_OFSWITCH13
     pkt->ns3_uid          = 0;
+    pkt->clone_cb         = 0;
+    pkt->destroy_cb       = 0;
 #endif
 
     pkt->handle_std = packet_handle_std_create(pkt);
@@ -94,12 +97,17 @@ packet_clone(struct packet *pkt) {
                                          // but this buffer is a copy of that,
                                          // and might be altered later
     clone->table_id         = pkt->table_id;
-#ifdef NS3_OFSWITCH13
-    clone->ns3_uid          = pkt->ns3_uid;
-#endif
 
     clone->handle_std = packet_handle_std_clone(clone, pkt->handle_std);
 
+#ifdef NS3_OFSWITCH13
+    clone->ns3_uid          = pkt->ns3_uid;
+    clone->clone_cb         = pkt->clone_cb;
+    clone->destroy_cb       = pkt->destroy_cb;
+    if (pkt->clone_cb != 0) {
+        pkt->clone_cb (pkt, clone);
+    }
+#endif
     return clone;
 }
 
@@ -116,6 +124,11 @@ packet_destroy(struct packet *pkt) {
         }
     }
 
+#ifdef NS3_OFSWITCH13
+    if (pkt->destroy_cb != 0) {
+        pkt->destroy_cb (pkt);
+    }
+#endif
     action_set_destroy(pkt->action_set);
     ofpbuf_delete(pkt->buffer);
     packet_handle_std_destroy(pkt->handle_std);
