@@ -67,13 +67,9 @@ struct packet {
 
 #ifdef NS3_OFSWITCH13
     // When compiling the ns3 library, including a ns3 packet uid, used to 
-    // associate this packet to the ns3 internal packet. Also, including two
-    // callbacks fired to notify the simulator when cloning or destroying this 
-    // packet.
+    // associate this packet to the ns3 internal packet, and a modified counter. 
     uint64_t ns3_uid;
     uint8_t modified;
-    void (*clone_cb) (struct packet *pkt, struct packet *clone);
-    void (*destroy_cb) (struct packet *pkt);
 #endif
 };
 

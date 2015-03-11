@@ -66,8 +66,6 @@ packet_create(struct datapath *dp, uint32_t in_port,
 #ifdef NS3_OFSWITCH13
     pkt->ns3_uid          = 0;
     pkt->modified         = 0;
-    pkt->clone_cb         = 0;
-    pkt->destroy_cb       = 0;
 #endif
 
     pkt->handle_std = packet_handle_std_create(pkt);
@@ -104,10 +102,8 @@ packet_clone(struct packet *pkt) {
 #ifdef NS3_OFSWITCH13
     clone->ns3_uid          = pkt->ns3_uid;
     clone->modified         = pkt->modified;
-    clone->clone_cb         = pkt->clone_cb;
-    clone->destroy_cb       = pkt->destroy_cb;
-    if (pkt->clone_cb != 0) {
-        pkt->clone_cb (pkt, clone);
+    if (pkt->dp->pkt_clone_cb != 0) {
+        pkt->dp->pkt_clone_cb (pkt, clone);
     }
 #endif
     return clone;
@@ -127,8 +123,8 @@ packet_destroy(struct packet *pkt) {
     }
 
 #ifdef NS3_OFSWITCH13
-    if (pkt->destroy_cb != 0) {
-        pkt->destroy_cb (pkt);
+    if (pkt->dp->pkt_destroy_cb != 0) {
+        pkt->dp->pkt_destroy_cb (pkt);
     }
 #endif
     action_set_destroy(pkt->action_set);

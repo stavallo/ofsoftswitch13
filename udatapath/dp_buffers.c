@@ -81,13 +81,6 @@ struct dp_buffers {
     size_t                 buffer_idx;
     size_t                 buffers_num;
     struct packet_buffer   buffers[N_PKT_BUFFERS];
-
-#ifdef NS3_OFSWITCH13
-    // When compiling the ns3 library, including two callbacks fired to notify
-    // the simulator when packet is saved/retrieved to/from buffer.
-    void (*save_cb) (struct packet *pkt, time_t timeout);
-    void (*retrieve_cb) (struct packet *pkt);
-#endif    
 };
 
 
@@ -148,8 +141,8 @@ dp_buffers_save(struct dp_buffers *dpb, struct packet *pkt) {
     pkt->buffer_id  = id;
 
 #ifdef NS3_OFSWITCH13
-    if (dpb->save_cb != 0) {
-        dpb->save_cb (pkt, p->timeout);
+    if (dpb->dp->buff_save_cb != 0) {
+        dpb->dp->buff_save_cb (pkt, p->timeout);
     }
 #endif
     return id;
@@ -168,8 +161,8 @@ dp_buffers_retrieve(struct dp_buffers *dpb, uint32_t id) {
 
         p->pkt = NULL;
 #ifdef NS3_OFSWITCH13
-    if (dpb->retrieve_cb != 0) {
-        dpb->retrieve_cb (pkt);
+    if (dpb->dp->buff_retrieve_cb != 0) {
+        dpb->dp->buff_retrieve_cb (pkt);
     }
 #endif
     } else {
