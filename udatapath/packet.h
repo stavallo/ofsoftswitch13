@@ -71,6 +71,7 @@ struct packet {
     // callbacks fired to notify the simulator when cloning or destroying this 
     // packet.
     uint64_t ns3_uid;
+    uint8_t modified;
     void (*clone_cb) (struct packet *pkt, struct packet *clone);
     void (*destroy_cb) (struct packet *pkt);
 #endif
