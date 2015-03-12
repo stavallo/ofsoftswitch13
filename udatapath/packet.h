@@ -66,10 +66,11 @@ struct packet {
     struct packet_handle_std  *handle_std; /* handler for standard match structure */
 
 #ifdef NS3_OFSWITCH13
-    // When compiling the ns3 library, including a ns3 packet uid, used to 
-    // associate this packet to the ns3 internal packet, and a modified counter. 
+    // When compiling the ns3 library, including a ns3 packet uid (associated 
+    // with ns3 internal packet), a change counter and a clone flag.
     uint64_t ns3_uid;
-    uint8_t modified;
+    uint8_t changes;
+    bool clone;
 #endif
 };
 

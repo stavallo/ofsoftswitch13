@@ -68,7 +68,7 @@ static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
 static void
 packet_modified (struct packet *pkt) {
 #ifdef NS3_OFSWITCH13
-    pkt->modified++;
+    pkt->changes++;
 #endif
     return;
 }

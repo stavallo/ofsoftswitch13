@@ -65,7 +65,8 @@ packet_create(struct datapath *dp, uint32_t in_port,
 
 #ifdef NS3_OFSWITCH13
     pkt->ns3_uid          = 0;
-    pkt->modified         = 0;
+    pkt->changes          = 0;
+    pkt->clone            = false;
 #endif
 
     pkt->handle_std = packet_handle_std_create(pkt);
@@ -101,7 +102,8 @@ packet_clone(struct packet *pkt) {
 
 #ifdef NS3_OFSWITCH13
     clone->ns3_uid          = pkt->ns3_uid;
-    clone->modified         = pkt->modified;
+    clone->changes          = pkt->changes;
+    clone->clone            = true;
     if (pkt->dp->pkt_clone_cb != 0) {
         pkt->dp->pkt_clone_cb (pkt, clone);
     }
@@ -150,10 +152,9 @@ packet_to_string(struct packet *pkt) {
     fprintf(stream, "\", buffer=\"");
     ofl_buffer_print(stream, pkt->buffer_id);
 #ifdef NS3_OFSWITCH13
-    fprintf(stream, "\", ns3pktid=\"");
-    ofl_buffer_print(stream, pkt->ns3_uid);
-    fprintf(stream, "\", changes=\"");
-    ofl_buffer_print(stream, pkt->modified);
+    fprintf(stream, "\", ns3pktid=\"%u", pkt->ns3_uid);
+    fprintf(stream, "\", changes=\"%u", pkt->changes);
+    fprintf(stream, "\", clone=\"%u", pkt->clone);
 #endif    
     fprintf(stream, "\", std=");
     //packet_handle_std_print(stream, pkt->handle_std);
