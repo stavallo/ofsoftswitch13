@@ -17,7 +17,7 @@ Thanks to the original [CPqD OpenFlow 1.3 Software Switch][cpqdofs13] contributo
 Luciano Jerez Chaves (luciano at lrc dot ic dot unicamp dot br)
 ![Google Analytics](https://ga-beacon.appspot.com/UA-12913294-2/ljerezchaves/ofsoftswitch13?pixel "")
 
-[ofp13]: https://www.opennetworking.org/images/stories/downloads/specification/openflow-spec-v1.3.0.pdf
+[ofp13]: https://www.opennetworking.org/sdn-resources/technical-library
 [cpqdofs13]: https://github.com/CPqD/ofsoftswitch13
 [ns-3]: https://www.nsnam.org
 [compile]: https://github.com/CPqD/ofsoftswitch13/blob/master/README.md
