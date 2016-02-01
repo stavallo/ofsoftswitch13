@@ -1,4 +1,4 @@
-# OpenFlow 1.3 Software Switch + ns-3 Network Simulator
+# OpenFlow 1.3 Software Switch for ns-3 Network Simulator
 
 This is an [OpenFlow 1.3][ofp13] compatible user-space software switch implementation, forked from the original [CPqD OpenFlow 1.3 Software Switch][cpqdofs13] and slightly modified to proper integration with [ns-3 Network Simulator][ns-3].
 
