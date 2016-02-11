@@ -214,8 +214,10 @@ dpctl_transact_and_print(struct vconn *vconn, struct ofl_msg_header *req,
 static void
 usage(void) NO_RETURN;
 
+#ifndef DPCTL_AS_LIB
 static void
 parse_options(int argc, char *argv[]);
+#endif
 
 static uint8_t mask_all[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
@@ -1157,6 +1159,7 @@ dpctl_exec_ns3_command(void *ctrl, int argc, char *argv[])
 }
 #endif
 
+#ifndef DPCTL_AS_LIB
 static void
 parse_options(int argc, char *argv[])
 {
@@ -1222,6 +1225,7 @@ parse_options(int argc, char *argv[])
     }
     free(short_options);
 }
+#endif
 
 
 

@@ -440,6 +440,9 @@ dp_set_max_queues(struct datapath *dp, uint32_t max_queues) {
 }
 
 
+#ifndef NS3_OFSWITCH13
+static
+#endif
 int
 send_openflow_buffer_to_remote(struct ofpbuf *buffer, struct remote *remote) {
     struct rconn* rconn = remote->rconn;
