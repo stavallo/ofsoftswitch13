@@ -1068,6 +1068,8 @@ dp_execute_action(struct packet *pkt,
             VLOG_WARN_RL(LOG_MODULE, &rl, "Trying to execute unknown action type (%u).", action->type);
         }
     }
+
+    packet_handle_std_validate(pkt->handle_std);
     if (VLOG_IS_DBG_ENABLED(LOG_MODULE)) {
         char *p = packet_to_string(pkt);
         VLOG_DBG_RL(LOG_MODULE, &rl, "action result: %s", p);
