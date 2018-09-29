@@ -73,7 +73,7 @@ ofl_structs_instructions_unpack(struct ofp_instruction *src, size_t *len, struct
 
             si = (struct ofp_instruction_goto_table *)src;
 
-            if (si->table_id >= PIPELINE_TABLES) {
+            if (si->table_id > OFPTT_MAX) {
                 if (OFL_LOG_IS_WARN_ENABLED(LOG_MODULE)) {
                     char *ts = ofl_table_to_string(si->table_id);
                     OFL_LOG_WARN(LOG_MODULE, "Received GOTO_TABLE instruction has invalid table_id (%s).", ts);
@@ -503,7 +503,7 @@ ofl_structs_flow_stats_unpack(struct ofp_flow_stats *src, uint8_t *buf, size_t *
         return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
     }
 
-    if (src->table_id >= PIPELINE_TABLES) {
+    if (src->table_id > OFPTT_MAX && src->table_id != OFPTT_ALL) {
         if (OFL_LOG_IS_WARN_ENABLED(LOG_MODULE)) {
             char *ts = ofl_table_to_string(src->table_id);
             OFL_LOG_WARN(LOG_MODULE, "Received flow stats has invalid table_id (%s).", ts);
