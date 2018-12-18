@@ -44,7 +44,7 @@
 
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(60, 60);
 
-
+#define DAGBASED 1
 
 struct group_table;
 struct datapath;
@@ -72,12 +72,16 @@ bucket_is_alive(struct ofl_bucket *bucket, struct datapath *dp);
 static void
 init_select_group(struct group_entry *entry, struct ofl_msg_group_mod *mod);
 
+#ifndef DAGBASED
 static size_t
 select_from_select_group(struct group_entry *entry);
+#else
+static size_t
+select_from_select_group(struct group_entry *entry, struct packet *pkt);
+#endif
 
 static size_t
 select_from_ff_group(struct group_entry *entry);
-
 
 struct group_entry *
 group_entry_create(struct datapath *dp, struct group_table *table, struct ofl_msg_group_mod *mod) {
@@ -175,8 +179,11 @@ execute_all(struct group_entry *entry, struct packet *pkt) {
 /* Executes a group entry of type SELECT. */
 static void
 execute_select(struct group_entry *entry, struct packet *pkt) {
+#ifndef DAGBASED
     size_t b  = select_from_select_group(entry);
-
+#else
+    size_t b  = select_from_select_group(entry, pkt);
+#endif
     if (b != -1) {
         struct ofl_bucket *bucket = entry->desc->buckets[b];
 
@@ -403,6 +410,7 @@ init_select_group(struct group_entry *entry, struct ofl_msg_group_mod *mod) {
     }
 }
 
+#ifndef DAGBASED
 /* Selects a bucket from a select group, based on the w.r.r. algorithm. */
 static size_t
 select_from_select_group(struct group_entry *entry) {
@@ -435,6 +443,55 @@ select_from_select_group(struct group_entry *entry) {
     VLOG_WARN_RL(LOG_MODULE, &rl, "Could not select from select group.");
     return -1;
 }
+#else
+/* Selects a bucket from a select group, based on the hash of the 5-tuple. */
+static size_t
+select_from_select_group(struct group_entry *entry, struct packet *pkt) {
+
+    if (!pkt->buffer || entry->desc->buckets_num == 0) {
+        return -1;
+    }
+
+    // HACK to get the fields of the IP and TCP/UDP header
+    // we skip 12 (two MAC addresses) + 2 (LLC) + 4 (MPLS) = 18 bytes to get to the IP header
+    // ...plus 9 to get to IP_proto
+    uint8_t* ip_proto = (uint8_t*)ofpbuf_at (pkt->buffer, 27, 1);
+    // ...plus 3 to get to IP_src
+    uint8_t* ip_src = (uint8_t*)ofpbuf_at (pkt->buffer, 30, 4);
+    // ...plus 4 to get to IP_dst
+    uint8_t* ip_dst = (uint8_t*)ofpbuf_at (pkt->buffer, 34, 4);
+    // ...plus 4 to get to TCP/UDP src port
+    uint8_t* tcp_src = (uint8_t*)ofpbuf_at (pkt->buffer, 38, 2);
+    // ...plus 2 to get to TCP/UDP dst port
+    uint8_t* tcp_dst = (uint8_t*)ofpbuf_at (pkt->buffer, 40, 2);
+
+    if (!ip_proto || !ip_src || !ip_dst) {
+        VLOG_WARN_RL(LOG_MODULE, &rl, "No IP header found");
+        return -1;
+    }
+
+    VLOG_WARN_RL(LOG_MODULE, &rl, "IP proto %x", *ip_proto);
+    VLOG_WARN_RL(LOG_MODULE, &rl, "IP src %x %x %x %x", ip_src[0], ip_src[1], ip_src[2], ip_src[3]);
+    VLOG_WARN_RL(LOG_MODULE, &rl, "IP dst %x %x %x %x", ip_dst[0], ip_dst[1], ip_dst[2], ip_dst[3]);
+
+    if ((*ip_proto == 6 || *ip_proto == 17) && tcp_src && tcp_dst) {
+        VLOG_WARN_RL(LOG_MODULE, &rl, "TCP/UDP src port %x %x", tcp_src[0], tcp_src[1]);
+        VLOG_WARN_RL(LOG_MODULE, &rl, "TCP/UDP dst port %x %x", tcp_dst[0], tcp_dst[1]);
+    }
+
+    uint8_t xor = ip_src[0] ^ ip_src[1] ^ ip_src[2] ^ ip_src[3]
+                ^ ip_dst[0] ^ ip_dst[1] ^ ip_dst[2] ^ ip_dst[3]
+                ^ *ip_proto;
+
+    if ((*ip_proto == 6 || *ip_proto == 17) && tcp_src && tcp_dst) {
+        xor = xor ^ tcp_src[0] ^ tcp_src[1] ^ tcp_dst[0] ^ tcp_dst[1];
+    }
+
+    VLOG_WARN_RL(LOG_MODULE, &rl, "Selected bucket %lu", xor % entry->desc->buckets_num);
+
+    return xor % entry->desc->buckets_num;
+}
+#endif
 
 /* Selects the first live bucket from the failfast group. */
 static size_t
